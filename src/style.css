@@ -4,9 +4,14 @@
 }
 
 #big {
+  display: inline-block;
   background-color: gray;
   width: 80vw;
-  height: 180vh;
+  height: 100vh;
   word-wrap: break-word;
   touch-action: none;
+}
+
+button {
+  /* float: right; */
 }

@@ -28,6 +28,16 @@ function end_path () {
   path = null
 }
 
+function download_svg () {
+  let svg = paper.toSVG(),
+      blob = new Blob([svg], {'type': 'image/svg+xml'}),
+      a = document.createElement('a')
+  a.download = new Date().toISOString() + '.svg'
+  a.type = 'image/svg+xml'
+  a.href = (window.URL || webkitURL).createObjectURL(blob)
+  a.click()
+}  
+
 function setup_events () {
   let big = document.getElementById("big")
   big.addEventListener("touchstart", (e) => {
@@ -52,8 +62,5 @@ window.onload = () => {
   console.log('ok')
   setup_events()
   paper = Raphael('big')
-  paper
-    .rect(50,50,100,100)
-    .attr('fill', '#f00')
   animate()
 }
