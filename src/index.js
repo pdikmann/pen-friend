@@ -1,31 +1,55 @@
 let paper,
     path = null, // the current path as svg
-    point_buffer = [] // points added to the path next frame
+    point_buffer = [], // points added to the path next frame
+    smoothX, smoothY, // smoothed out touch coordinates
+    endX, endY, // coordinates of last recorded touch, used when ending a path
+    smooth = 0.2
 
 function start_path (x, y) {
   path = paper.path(`M${x},${y}`)
+  smoothX = x
+  smoothY = y
 }
 
 function buffer_points (x, y) {
-  point_buffer.push([x, y])
+  //console.log(dist(smoothX, smoothY, x, y))
+  let dst = dist(smoothX, smoothY, x, y),
+      smooth_step = clamp(dst / 100, 0.2, 0.8)
+      dx = (x - smoothX) * smooth_step,
+      dy = (y - smoothY) * smooth_step
+  smoothX += dx
+  smoothY += dy
+  endX = x,
+  endY = y
+  point_buffer.push([smoothX, smoothY])
 }
 
 function update_path () {
   if (point_buffer.length == 0) return
   if (path == null) return
+  if (Math.abs(smoothX - endX) > 1) buffer_points(endX, endY) // keep approximating resting pen
   //if (point_buffer.length > 1) console.log(point_buffer.length)
   let old = path.attr("path")
   point_buffer.forEach((e, i) => {
-    point_buffer[i] = "L" + e.join(',')
+    point_buffer[i] = e.join(' ')
   })
-  let newp = old + point_buffer.join('')
+  let newp = old + "L" + point_buffer.join(' ')
   point_buffer = []
   path.attr("path", newp)
 }
 
-function end_path () {
+function end_path (x, y) {
+  point_buffer.push([endX, endY])
   update_path()
   path = null
+}
+
+function dist (x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2))
+}
+
+function clamp (value, min, max) {
+  return Math.max(min, Math.min(max, value))
 }
 
 function download_svg () {
