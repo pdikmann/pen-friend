@@ -3,7 +3,10 @@ let paper,
     point_buffer = [], // points added to the path next frame
     smoothX, smoothY, // smoothed out touch coordinates
     endX, endY, // coordinates of last recorded touch, used when ending a path
-    smooth = 0.2
+    smooth = 0.2,
+    indicator, // indicator html ref
+    indicator_frame_max = 0,
+    indicator_range = window.innerWidth
 
 function start_path (x, y) {
   path = paper.path(`M${x},${y}`)
@@ -22,9 +25,12 @@ function buffer_points (x, y) {
   endX = x,
   endY = y
   point_buffer.push([smoothX, smoothY])
+  indicator_frame_max = Math.max(indicator_frame_max, smooth_step)
 }
 
 function update_path () {
+  indicator.style = `left: ${indicator_range*indicator_frame_max}px`
+  indicator_frame_max = 0
   if (point_buffer.length == 0) return
   if (path == null) return
   if (Math.abs(smoothX - endX) > 1) buffer_points(endX, endY) // keep approximating resting pen
@@ -86,5 +92,6 @@ window.onload = () => {
   console.log('ok')
   setup_events()
   paper = Raphael('big')
+  indicator = document.getElementById('indicator')
   animate()
 }
