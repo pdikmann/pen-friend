@@ -12,6 +12,8 @@ function start_path (x, y) {
   path = paper.path(`M${x},${y}`)
   smoothX = x
   smoothY = y
+  endX = x
+  endY = y
 }
 
 function buffer_points (x, y) {
@@ -22,7 +24,7 @@ function buffer_points (x, y) {
       dy = (y - smoothY) * smooth_step
   smoothX += dx
   smoothY += dy
-  endX = x,
+  endX = x
   endY = y
   point_buffer.push([smoothX, smoothY])
   indicator_frame_max = Math.max(indicator_frame_max, smooth_step)
@@ -31,9 +33,11 @@ function buffer_points (x, y) {
 function update_path () {
   indicator.style = `left: ${indicator_range*indicator_frame_max}px`
   indicator_frame_max = 0
-  if (point_buffer.length == 0) return
   if (path == null) return
-  if (Math.abs(smoothX - endX) > 1) buffer_points(endX, endY) // keep approximating resting pen
+  if (point_buffer.length == 0) {
+    if (dist(smoothX, smoothY, endX, endY) > 1) { buffer_points(endX, endY) } // keep approximating resting pen
+    else { return }
+  }
   //if (point_buffer.length > 1) console.log(point_buffer.length)
   let old = path.attr("path")
   point_buffer.forEach((e, i) => {
