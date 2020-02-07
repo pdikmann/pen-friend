@@ -19,7 +19,7 @@ function start_path (x, y) {
 function buffer_points (x, y) {
   //console.log(dist(smoothX, smoothY, x, y))
   let dst = dist(smoothX, smoothY, x, y),
-      smooth_step = clamp(dst / 30, 0.1, 0.85)
+      smooth_step = clamp(dst / 30, 0.1, 0.85), // or constant 0.3 / user adjustable
       dx = (x - smoothX) * smooth_step,
       dy = (y - smoothY) * smooth_step
   smoothX += dx
