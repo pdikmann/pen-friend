@@ -75,14 +75,17 @@ function download_svg () {
 function setup_events () {
   let big = document.getElementById("big")
   big.addEventListener("touchstart", (e) => {
+    if (e.touches.length > 1) return
     start_path(e.touches[0].pageX,
                e.touches[0].pageY)
   })
   big.addEventListener("touchmove", (e) => {
+    if (e.touches.length > 1) return
     buffer_points(e.touches[0].pageX,
                   e.touches[0].pageY)
   })
   big.addEventListener("touchend", (e) => {
+    if (e.touches.length > 1) return
     end_path()
   })
 }
