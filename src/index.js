@@ -1,3 +1,5 @@
+import draw_mode from "./draw_mode.js"
+
 let paper,
     path = null, // the current path as svg
     point_buffer = [], // points added to the path next frame
@@ -6,7 +8,13 @@ let paper,
     smooth = 0.2,
     indicator, // indicator html ref
     indicator_frame_max = 0,
-    indicator_range = window.innerWidth
+    indicator_range = window.innerWidth,
+    mode_type = {
+      draw: 0,
+      erase: 1
+    },
+    mode = mode_type.draw, // toggle erase and draw mode
+    erase_button // keep track of button (for styling)
 
 function start_path (x, y) {
   path = paper.path(`M${x},${y}`)
@@ -72,8 +80,36 @@ function download_svg () {
   a.click()
 }  
 
+function clear () {
+  paper.clear()
+}
+
+function toggle_mode () {
+  switch (mode) {
+  case mode_type.draw:
+    mode = mode_type.erase
+    setup_erase_mode()
+    erase_button.style = "background-color: red; color: white"
+    break
+  case mode_type.erase:
+    mode = mode_type.draw
+    setup_draw_mode()
+    erase_button.style = ""
+    break
+  }
+}
+
 function setup_events () {
-  let big = document.getElementById("big")
+  let big = document.getElementById("big"),
+      buttons = document.getElementsByClassName('button')
+  buttons[0].addEventListener('touchstart', e => download_svg())
+  buttons[1].addEventListener('touchstart', e => clear())
+  buttons[2].addEventListener('touchstart', e => toggle_mode())
+  erase_button = buttons[2]
+  setup_draw_mode()
+}
+
+function setup_draw_mode () {
   big.addEventListener("touchstart", (e) => {
     start_path(e.touches[0].pageX,
                e.touches[0].pageY)
@@ -87,8 +123,25 @@ function setup_events () {
   })
 }
 
+function setup_erase_mode () {
+  big.addEventListener("touchstart", (e) => {
+    erase_start(e.touches[0].pageX,
+                e.touches[0].pageY)
+  })
+  big.addEventListener("touchmove", (e) => {
+    erase_continue(e.touches[0].pageX,
+                  e.touches[0].pageY)
+  })
+}
+
 function animate () {
-  update_path()
+  switch (mode) {
+  case mode_type.draw:
+    update_path()
+    break
+  case mode_type.erase:
+    break
+  }
   window.requestAnimationFrame(animate)
 }
 

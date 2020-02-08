@@ -1,6 +1,25 @@
 * {
   margin: 0px;
   padding: 0px;
+  font-family: sans-serif;
+}
+
+#menu-bar {
+  position: fixed;
+  display: block;
+  top: 0px;
+  left: 0px;
+  /* background-color: teal; */
+  z-index: 1;
+  touch-action: none;
+  padding: 0.25rem;
+}
+
+.button {
+  display: inline-block;
+  background-color: white;
+  padding: 0.25rem;
+  margin: 0px;
 }
 
 #indicator {
@@ -15,10 +34,10 @@
 
 #big {
   display: inline-block;
-  background-color: gray;
-  width: 80vw;
+  background-color: lightgray;
+  width: 100vw;
   height: 100vh;
-  word-wrap: break-word;
+  /* word-wrap: break-word; */
   touch-action: none;
 }
 
