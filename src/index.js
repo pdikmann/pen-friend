@@ -11,10 +11,16 @@ let mode_type = {
       erase: 1
     },
     mode = mode_type.draw, // toggle erase and draw mode
+    guide_mode = {
+      on: 1,
+      off: 0
+    },
+    guides = guide_mode.on, // toggle guides on / off
     button = { // keep track of buttons (for styling)
       erase: null,
       download: null,
-      clear: null
+      clear: null,
+      guides: null
     }
 
 function download_svg () {
@@ -50,13 +56,29 @@ function toggle_mode () {
   }
 }
 
+function toggle_guides () {
+  let gs = Array.prototype.slice.call(document.getElementsByClassName('guide'))
+  switch (guides) {
+  case guide_mode.on:
+    guides = guide_mode.off
+    gs.forEach(e => e.className = "guide off")
+    break
+  case guide_mode.off:
+    guides = guide_mode.on
+    gs.forEach(e => e.className = "guide")
+    break
+  }
+}
+
 function setup_events () {
   let big = document.getElementById("big")
   button.download = document.getElementById('download')
   button.clear = document.getElementById('clear')
   button.erase = document.getElementById('erase')
-  button.download.addEventListener('touchstart', e => download_svg())
-  button.erase.addEventListener('touchstart', e => toggle_mode())
+  button.guides = document.getElementById('guides')
+  button.download.addEventListener('touchstart', download_svg)
+  button.erase.addEventListener('touchstart', toggle_mode)
+  button.guides.addEventListener('touchstart', toggle_guides)
   install_draw_mode_events()
 }
 
