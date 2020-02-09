@@ -2,6 +2,10 @@
   margin: 0px;
   padding: 0px;
   font-family: sans-serif;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #menu-bar {
@@ -9,9 +13,7 @@
   display: block;
   top: 0px;
   left: 0px;
-  /* background-color: teal; */
   z-index: 1;
-  touch-action: none;
   padding: 0.25rem;
 }
 
@@ -95,13 +97,6 @@
 
 #big {
   display: inline-block;
-  /* background-color: lightgray; */
   width: 100vw;
   height: 100vh;
-  /* word-wrap: break-word; */
-  touch-action: none;
-}
-
-button {
-  /* float: right; */
 }
