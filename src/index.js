@@ -79,21 +79,23 @@ function erase_end () {
        endX: x2,
        endY: y2} = eraser_line
   // origin at first point,
-  // second point on x axis / y = 0, maybe scale so its at 1 for easier comparisons
+  // second point on x axis / y = 0,
+  // scale so second point is at 1 for easier comparisons
   m.rotate(-Raphael.deg(Math.atan2(y2-y1, x2-x1)), 0, 0)
   m.scale(1/(dist(x1,y1,x2,y2)))
   m.translate(-x1, -y1)
-  //console.log(m.x(x1,y1), m.y(x1,y1))
-  //console.log(m.x(x2,y2), m.y(x2,y2))
-  //debugger
   // then:
   // for each path
-  let //counter = 0,
-      to_del = []
+  let to_del = []
   paper.forEach(e => {
+    // discard any elements whose bounding box is not touched by eraser line
+    let bb = e.getBBox()
+    if (bb.x + bb.width < Math.min(x1, x2)) return
+    if (bb.x > Math.max(x1, x2)) return
+    if (bb.y + bb.height < Math.min(y1, y2)) return
+    if (bb.y > Math.max(y1, y2)) return
     // for each pair of coordinates
     let pts = e.attr('path')
-        //del = false
     for (let i = pts.length - 1; i > 0; i--) {
       let [,px1,py1] = pts[i],
           [,px2,py2] = pts[i - 1],
@@ -113,13 +115,9 @@ function erase_end () {
           sxx = (f * (xx1 - xx2)) + xx1
       if (sxx < 0 || sxx > 1) continue
       // if any are true, delete path and continue with next path
-      //del = true
       to_del.push(e)
       break
     }
-    //if (del) e.remove()
-    //counter++
-    return true
   })
   to_del.forEach(e => e.remove())
   eraser_line = null
