@@ -37,15 +37,15 @@ function toggle_mode () {
     mode = mode_type.erase
     uninstall_draw_mode_events()
     install_erase_mode_events()
-    button.erase.style = "background-color: red; color: white;"
-    button.clear.style = "color:inherit;"
+    button.erase.className = "button active"
+    button.clear.className = "button active"
     break
   case mode_type.erase:
     mode = mode_type.draw
     uninstall_erase_mode_events()
     install_draw_mode_events()
-    button.erase.style = ""
-    button.clear.style = ""
+    button.erase.className = "button"
+    button.clear.className = "button"
     break
   }
 }

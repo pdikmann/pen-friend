@@ -26,6 +26,14 @@
   color: gray;
 }
 
+#clear.active {
+  color: inherit;
+}
+
+#erase.active {
+  background-color: red;
+  color: white;
+}
 
 :root {
   --long-side: 105;
