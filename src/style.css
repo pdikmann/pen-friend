@@ -1,6 +1,86 @@
 * {
   margin: 0px;
   padding: 0px;
+  font-family: sans-serif;
+}
+
+#menu-bar {
+  position: fixed;
+  display: block;
+  top: 0px;
+  left: 0px;
+  /* background-color: teal; */
+  z-index: 1;
+  touch-action: none;
+  padding: 0.25rem;
+}
+
+.button {
+  display: inline-block;
+  background-color: white;
+  padding: 0.25rem;
+  margin: 0px;
+}
+
+#clear {
+  color: gray;
+}
+
+#clear.active {
+  color: inherit;
+}
+
+#erase.active {
+  background-color: red;
+  color: white;
+}
+
+:root {
+  --long-side: 85;
+  --short-side: 68;
+  --ratio: calc(var(--short-side) / var(--long-side));
+  --perc: 80;
+}
+
+.guide {
+  position: absolute;
+  display: block;
+  border: 1px solid black;
+}
+
+.guide.off {
+  display: none;
+}
+
+#guide1 {
+  border: 1px solid red;
+  --long-width: calc(var(--perc) * 1vw);
+  --short-height: calc(var(--perc) * var(--ratio) * 1vw);
+  width: var(--long-width);
+  height: var(--short-height);
+  left: calc((100vw - var(--long-width)) / 2);
+  top: calc((100vh - var(--short-height)) / 2);
+}
+
+#guide2 {
+  border: 1px solid green;
+  --long-height: calc(var(--perc) * 1vh);
+  --short-width: calc(var(--perc) * var(--ratio) * 1vh);
+  height: var(--long-height);
+  width: var(--short-width);
+  left: calc((100vw - var(--short-width)) / 2);
+  top: calc((100vh - var(--long-height)) / 2);
+}
+
+#guide3 {
+  border: 1px solid blue;
+  --dec: 0;
+  --double-width: calc((var(--perc) - var(--dec)) * 1vw);
+  --single-height: calc(((var(--perc) - var(--dec)) / var(--ratio)) / 2 * 1vw);
+  width: var(--double-width);
+  height: var(--single-height);
+  left: calc((100vw - var(--double-width)) / 2);
+  top: calc((100vh - var(--single-height)) / 2);
 }
 
 #indicator {
@@ -15,8 +95,8 @@
 
 #big {
   display: inline-block;
-  background-color: gray;
-  width: 80vw;
+  /* background-color: lightgray; */
+  width: 100vw;
   height: 100vh;
   word-wrap: break-word;
   touch-action: pinch-zoom;
