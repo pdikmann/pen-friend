@@ -26,6 +26,38 @@
   color: gray;
 }
 
+
+:root {
+  --long-side: 105;
+  --short-side: 68;
+  --ratio: calc(var(--short-side) / var(--long-side));
+  --perc: 90;
+}
+
+.guide {
+  position: absolute;
+  display: block;
+  border: 1px solid black;
+}
+
+#guide1 {
+  --long-width: calc(var(--perc) * 1vw);
+  --short-height: calc(var(--perc) * var(--ratio) * 1vw);
+  width: var(--long-width);
+  height: var(--short-height);
+  left: calc((100vw - var(--long-width)) / 2);
+  top: calc((100vh - var(--short-height)) / 2);
+}
+
+#guide2 {
+  --long-height: calc(var(--perc) * 1vh);
+  --short-width: calc(var(--perc) * var(--ratio) * 1vh);
+  height: var(--long-height);
+  width: var(--short-width);
+  left: calc((100vw - var(--short-width)) / 2);
+  top: calc((100vh - var(--long-height)) / 2);
+}
+
 #indicator {
   position: absolute;
   display: block;
@@ -38,7 +70,7 @@
 
 #big {
   display: inline-block;
-  background-color: lightgray;
+  /* background-color: lightgray; */
   width: 100vw;
   height: 100vh;
   /* word-wrap: break-word; */
