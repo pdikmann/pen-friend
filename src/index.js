@@ -1,74 +1,16 @@
-import draw_mode from "./draw_mode.js"
+import {paper,
+        setup_raphael} from "./common.js"
+import {setup_indicator,
+        install_draw_mode_events,
+        uninstall_draw_mode_events,
+        update_path} from "./draw_mode.js"
 
-let paper,
-    path = null, // the current path as svg
-    point_buffer = [], // points added to the path next frame
-    smoothX, smoothY, // smoothed out touch coordinates
-    endX, endY, // coordinates of last recorded touch, used when ending a path
-    smooth = 0.2,
-    indicator, // indicator html ref
-    indicator_frame_max = 0,
-    indicator_range = window.innerWidth,
-    mode_type = {
+let mode_type = {
       draw: 0,
       erase: 1
     },
     mode = mode_type.draw, // toggle erase and draw mode
     erase_button // keep track of button (for styling)
-
-function start_path (x, y) {
-  path = paper.path(`M${x},${y}`)
-  smoothX = x
-  smoothY = y
-  endX = x
-  endY = y
-}
-
-function buffer_points (x, y) {
-  //console.log(dist(smoothX, smoothY, x, y))
-  let dst = dist(smoothX, smoothY, x, y),
-      smooth_step = clamp(dst / 30, 0.1, 0.85), // or constant 0.3 / user adjustable
-      dx = (x - smoothX) * smooth_step,
-      dy = (y - smoothY) * smooth_step
-  smoothX += dx
-  smoothY += dy
-  endX = x
-  endY = y
-  point_buffer.push([smoothX, smoothY])
-  indicator_frame_max = Math.max(indicator_frame_max, smooth_step)
-}
-
-function update_path () {
-  indicator.style = `left: ${indicator_range*indicator_frame_max}px`
-  indicator_frame_max = 0
-  if (path == null) return
-  if (point_buffer.length == 0) {
-    if (dist(smoothX, smoothY, endX, endY) > 1) { buffer_points(endX, endY) } // keep approximating resting pen
-    else { return }
-  }
-  //if (point_buffer.length > 1) console.log(point_buffer.length)
-  let old = path.attr("path")
-  point_buffer.forEach((e, i) => {
-    point_buffer[i] = e.join(' ')
-  })
-  let newp = old + "L" + point_buffer.join(' ')
-  point_buffer = []
-  path.attr("path", newp)
-}
-
-function end_path (x, y) {
-  point_buffer.push([endX, endY])
-  update_path()
-  path = null
-}
-
-function dist (x1, y1, x2, y2) {
-  return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2))
-}
-
-function clamp (value, min, max) {
-  return Math.max(min, Math.min(max, value))
-}
 
 function download_svg () {
   let svg = paper.toSVG(),
@@ -88,12 +30,14 @@ function toggle_mode () {
   switch (mode) {
   case mode_type.draw:
     mode = mode_type.erase
-    setup_erase_mode()
+    uninstall_draw_mode_events()
+    install_erase_mode_events()
     erase_button.style = "background-color: red; color: white"
     break
   case mode_type.erase:
     mode = mode_type.draw
-    setup_draw_mode()
+    uninstall_erase_mode_events()
+    install_draw_mode_events()
     erase_button.style = ""
     break
   }
@@ -106,32 +50,30 @@ function setup_events () {
   buttons[1].addEventListener('touchstart', e => clear())
   buttons[2].addEventListener('touchstart', e => toggle_mode())
   erase_button = buttons[2]
-  setup_draw_mode()
+  install_draw_mode_events()
 }
 
-function setup_draw_mode () {
-  big.addEventListener("touchstart", (e) => {
-    start_path(e.touches[0].pageX,
-               e.touches[0].pageY)
-  })
-  big.addEventListener("touchmove", (e) => {
-    buffer_points(e.touches[0].pageX,
-                  e.touches[0].pageY)
-  })
-  big.addEventListener("touchend", (e) => {
-    end_path()
-  })
+let eraser_line = {startX: null,
+                   startY: null,
+                   endX: null,
+                   endY: null}
+
+function erase_start ({touches}) {
+  let {pageX, pageY} = touches[0]
+  eraser_line.startX = pageX
+  eraser_line.startY = pageY
 }
 
-function setup_erase_mode () {
-  big.addEventListener("touchstart", (e) => {
-    erase_start(e.touches[0].pageX,
-                e.touches[0].pageY)
-  })
-  big.addEventListener("touchmove", (e) => {
-    erase_continue(e.touches[0].pageX,
-                  e.touches[0].pageY)
-  })
+function install_erase_mode_events () {
+  big.addEventListener("touchstart", erase_start)
+  big.addEventListener("touchmove", erase_continue)
+  big.addEventListener("touchend", erase_end)
+}
+
+function uninstall_erase_mode_events () {
+  big.removeEventListener("touchstart", erase_start)
+  big.removeEventListener("touchmove", erase_continue)
+  big.removeEventListener("touchend", erase_end)
 }
 
 function animate () {
@@ -147,8 +89,8 @@ function animate () {
 
 window.onload = () => {
   console.log('ok')
+  setup_raphael()
+  setup_indicator()
   setup_events()
-  paper = Raphael('big')
-  indicator = document.getElementById('indicator')
   animate()
 }
