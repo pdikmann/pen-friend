@@ -22,6 +22,10 @@
   margin: 0px;
 }
 
+#clear {
+  color: gray;
+}
+
 #indicator {
   position: absolute;
   display: block;

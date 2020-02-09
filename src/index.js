@@ -11,7 +11,11 @@ let mode_type = {
       erase: 1
     },
     mode = mode_type.draw, // toggle erase and draw mode
-    erase_button // keep track of button (for styling)
+    button = { // keep track of buttons (for styling)
+      erase: null,
+      download: null,
+      clear: null
+    }
 
 function download_svg () {
   let svg = paper.toSVG(),
@@ -33,24 +37,26 @@ function toggle_mode () {
     mode = mode_type.erase
     uninstall_draw_mode_events()
     install_erase_mode_events()
-    erase_button.style = "background-color: red; color: white"
+    button.erase.style = "background-color: red; color: white;"
+    button.clear.style = "color:inherit;"
     break
   case mode_type.erase:
     mode = mode_type.draw
     uninstall_erase_mode_events()
     install_draw_mode_events()
-    erase_button.style = ""
+    button.erase.style = ""
+    button.clear.style = ""
     break
   }
 }
 
 function setup_events () {
-  let big = document.getElementById("big"),
-      buttons = document.getElementsByClassName('button')
-  buttons[0].addEventListener('touchstart', e => download_svg())
-  buttons[1].addEventListener('touchstart', e => clear())
-  buttons[2].addEventListener('touchstart', e => toggle_mode())
-  erase_button = buttons[2]
+  let big = document.getElementById("big")
+  button.download = document.getElementById('download')
+  button.clear = document.getElementById('clear')
+  button.erase = document.getElementById('erase')
+  button.download.addEventListener('touchstart', e => download_svg())
+  button.erase.addEventListener('touchstart', e => toggle_mode())
   install_draw_mode_events()
 }
 
@@ -133,12 +139,14 @@ function install_erase_mode_events () {
   big.addEventListener("touchstart", erase_start)
   big.addEventListener("touchmove", erase_continue)
   big.addEventListener("touchend", erase_end)
+  button.clear.addEventListener('touchstart', clear)
 }
 
 function uninstall_erase_mode_events () {
   big.removeEventListener("touchstart", erase_start)
   big.removeEventListener("touchmove", erase_continue)
   big.removeEventListener("touchend", erase_end)
+  button.clear.removeEventListener('touchstart', clear)
 }
 
 function animate () {
