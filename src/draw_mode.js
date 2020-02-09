@@ -40,7 +40,7 @@ function buffer_points ({touches}) {
   buffer_points_(x, y)
 }
 
-function update_path () {
+function update_draw () {
   indicator.style = `left: ${indicator_range*indicator_frame_max}px`
   indicator_frame_max = 0
   if (path == null) return
@@ -60,7 +60,7 @@ function update_path () {
 
 function end_path () {
   point_buffer.push([endX, endY])
-  update_path()
+  update_draw()
   path = null
 }
 
@@ -79,4 +79,4 @@ function uninstall_draw_mode_events () {
 export {setup_indicator,
         install_draw_mode_events,
         uninstall_draw_mode_events,
-        update_path}
+        update_draw}
