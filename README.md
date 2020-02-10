@@ -1,3 +1,7 @@
+# usage
+
+visit https://pdikmann.github.io/pen-friend/src/ with a touch device, e.g. a tablet, optionally using a pen.
+
 # todos
 
 - detect 2-finger-touches to allow zooming (add/remove touch-action styling?)
