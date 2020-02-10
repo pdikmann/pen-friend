@@ -6,7 +6,10 @@ import {paper,
 import {setup_indicator,
         install_draw_mode_events,
         uninstall_draw_mode_events,
-        update_draw} from "./draw_mode.js"
+        update_draw,
+        change_smooth_fixed,
+        change_smooth_min,
+        change_smooth_dist} from "./draw_mode.js"
 import {update_eraser,
         install_erase_mode_events,
         uninstall_erase_mode_events} from "./erase_mode.js"
@@ -68,16 +71,17 @@ function toggle_guides () {
 function setup_smoothing () {
   let svals = [],
       smin = document.getElementById('smooth-min'),
-      sdist = document.getElementById('smooth-dist')
+      sdist = document.getElementById('smooth-dist'),
+      sfix = document.getElementById('smooth-fix')
   for (let i = 0; i < 105; i+=5) {
     let e = document.createElement('option'),
         is = i.toString()
-    e.value = i
+    e.value = i / 100
     e.innerText = is
     if (i === 10) {e.selected = true}
     smin.appendChild(e)
   }
-  for (let i = 0; i < 50; i+=3) {
+  for (let i = 0; i < 155; i+=5) {
     let e = document.createElement('option'),
         is = i.toString()
     e.value = i
@@ -85,6 +89,19 @@ function setup_smoothing () {
     if (i === 30) {e.selected = true}
     sdist.appendChild(e)
   }
+  smin.addEventListener('change', e => {
+    let f = parseFloat(e.target.value)
+    change_smooth_min(f)
+    console.log(f)
+  })
+  sdist.addEventListener('change', e => {
+    let f = parseFloat(e.target.value)
+    change_smooth_dist(f)
+    console.log(f)
+  })
+  sfix.addEventListener('click', e => {
+    change_smooth_fixed(e.target.checked)
+  })
 }
 
 function setup_events () {

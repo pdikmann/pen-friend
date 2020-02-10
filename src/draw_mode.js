@@ -4,10 +4,29 @@ let path = null, // the current path as svg
     point_buffer = [], // points added to the path next frame
     smoothX, smoothY, // smoothed out touch coordinates
     endX, endY, // coordinates of last recorded touch, used when ending a path
-    smooth = 0.2,
+    smooth = {
+      fixed: false,
+      max: 1, // 0.85
+      min: 0.1,
+      delta: 0.9,
+      dist: 30,
+    },
     indicator, // indicator html ref
     indicator_frame_max = 0,
     indicator_range = window.innerWidth
+
+function change_smooth_fixed (fixed) {
+  smooth.fixed = fixed
+}
+
+function change_smooth_min (x) {
+  smooth.min = x
+  smooth.delta = smooth.max - smooth.min
+}
+
+function change_smooth_dist (x) {
+  smooth.dist = x
+}
 
 function setup_indicator () {
   indicator = document.getElementById('indicator')
@@ -24,15 +43,18 @@ function start_path ({touches}) {
 
 function buffer_points_ (x, y) {
   let dst = dist(smoothX, smoothY, x, y),
-      smooth_step = clamp(dst / 30, 0.1, 0.85), // or constant 0.3 / user adjustable
-      dx = (x - smoothX) * smooth_step,
-      dy = (y - smoothY) * smooth_step
+      ramp = clamp(dst / smooth.dist, 0, 1),
+      dynamic = smooth.min + (ramp * smooth.delta),
+      smth = smooth.fixed ? smooth.min : dynamic,
+      //smooth_step = clamp(dst / 30, 0.1, 0.85), // or constant 0.3 / user adjustable
+      dx = (x - smoothX) * smth, //smooth_step,
+      dy = (y - smoothY) * smth //smooth_step
   smoothX += dx
   smoothY += dy
   endX = x
   endY = y
   point_buffer.push([smoothX, smoothY])
-  indicator_frame_max = Math.max(indicator_frame_max, smooth_step)
+  indicator_frame_max = Math.max(indicator_frame_max, smth)
 }
 
 function buffer_points ({touches}) {
@@ -79,4 +101,7 @@ function uninstall_draw_mode_events () {
 export {setup_indicator,
         install_draw_mode_events,
         uninstall_draw_mode_events,
-        update_draw}
+        update_draw,
+        change_smooth_fixed,
+        change_smooth_min,
+        change_smooth_dist}
