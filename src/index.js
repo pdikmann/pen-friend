@@ -74,7 +74,7 @@ function setup_smoothing () {
         is = i.toString()
     e.value = i
     e.innerText = is
-    if (i = 10) {e.selected = true}
+    if (i === 10) {e.selected = true}
     smin.appendChild(e)
   }
   for (let i = 0; i < 50; i+=3) {
@@ -82,7 +82,7 @@ function setup_smoothing () {
         is = i.toString()
     e.value = i
     e.innerText = is
-    if (i = 30) {e.selected = true}
+    if (i === 30) {e.selected = true}
     sdist.appendChild(e)
   }
 }
